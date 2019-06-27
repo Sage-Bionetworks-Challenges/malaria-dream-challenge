@@ -30,6 +30,8 @@ requirements:
         entry: |
           #!/usr/bin/env python
           import synapseclient
+          import pandas as pd
+          from pandas.api.types import is_numeric_dtype
           import argparse
           import os
           import json
@@ -39,18 +41,27 @@ requirements:
           parser.add_argument("-s", "--submission_file", help="Submission File")
 
           args = parser.parse_args()
-          
-          if args.submission_file is None:
-              prediction_file_status = "INVALID"
-              invalid_reasons = ['Expected FileEntity type but found ' + args.entity_type]
-          else:
-              with open(args.submission_file,"r") as sub_file:
-                  message = sub_file.read()
-              invalid_reasons = []
+          invalid_reasons = []
+          try:
+              subdf = pd.read_csv(args.submission_file)
+          except Exception:
+              invalid_reasons.append("Cannot read submission, must be csv.")
+
+          if not invalid_reasons:
+              if subdf.columns != ['Isolate', 'Predicted_IC50']:
+                  invalid_reasons.append("Must have columns 'Isolate' and 'Predicted_IC50'")
+              else:
+                  isolates = pd.Series(['isolate_' + str(i) for i in range(31,56)])
+                  if not isolates.isin(subdf['Isolate']).all() or not subdf['Isolate'].isin(isolates).all() or subdf['Isolate'].duplicated().any():
+                      invalid_reasons.append("Must have all the 'Isolate' and no duplicates allowed")
+                  if not is_numeric_dtype(isolates['Predicted_IC50']) or isolates['Predicted_IC50'].isnull().any():
+                      invalid_reasons.append("'Predicted_IC50' must be a numerical column and no NAs are allowed")
+
+          if not invalid_reasons:
               prediction_file_status = "VALIDATED"
-              if not message.startswith("test"):
-                  invalid_reasons.append("Submission must have test column")
-                  prediction_file_status = "INVALID"
+          else:
+              prediction_file_status = "INVALID"          
+
           result = {'prediction_file_errors':"\n".join(invalid_reasons),'prediction_file_status':prediction_file_status}
           with open(args.results, 'w') as o:
               o.write(json.dumps(result))
