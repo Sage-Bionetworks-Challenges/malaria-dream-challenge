@@ -43,7 +43,7 @@ steps:
       - id: entity_type 
       
   validation:
-    run: validate.cwl
+    run: validate_sc1.cwl
     in:
       - id: inputfile
         source: "#download_submission/filepath"
@@ -94,7 +94,7 @@ steps:
       - id: filepath
 
   scoring:
-    run: score.cwl
+    run: score_sc1.cwl
     in:
       - id: inputfile
         source: "#download_submission/filepath"
@@ -124,7 +124,7 @@ steps:
       - id: annotation_values
         source: "#scoring/results"
       - id: to_public
-        valueFrom: "true"
+        valueFrom: "false"
       - id: force_change_annotation_acl
         valueFrom: "true"
       - id: synapse_config

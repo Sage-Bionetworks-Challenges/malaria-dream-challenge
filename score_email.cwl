@@ -60,15 +60,9 @@ requirements:
           if status == "SCORED":
               del annots['prediction_file_status']
               subject = "Submission to '%s' scored!" % evaluation.name
-              if len(annots) == 0:
-                  message = "Your submission has been scored."
-              else:
-                  for annot in args.private_annotaions:
-                      del annots[annot]
-                  message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
-                             "Your submission (%s) is scored, below are your results:\n\n" % sub.name,
-                             "\n".join([i + " : " + str(annots[i]) for i in annots]),
-                             "\n\nSincerely,\nChallenge Administrator"]
+              message = ["Hello %s,\n\n" % syn.getUserProfile(userid)['userName'],
+                          "Your submission has been scored.\n\n",
+                          "Sincerely,\nChallenge Administrator"]
               syn.sendMessage(
                   userIds=[userid],
                   messageSubject=subject,
