@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-import pandas as pd
 import argparse
 import json
+import pandas as pd
+from pandas.api.types import is_numeric_dtype
 parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--results", required=True, help="validation results")
 parser.add_argument("-e", "--entity_type", required=True, help="synapse entity type downloaded")
@@ -20,15 +21,17 @@ else:
         invalid_reasons.append("Cannot read submission, must be tsv.")
 
     if not invalid_reasons:
-        if 'Isolate' not in subdf.columns or 'Predicted_Categorical_Clearance' not in subdf.columns:
-            invalid_reasons.append("Must have columns 'Isolate' and 'Predicted_Categorical_Clearance'")
+        if 'Isolate' not in subdf.columns or 'Predicted_Categorical_Clearance' not in subdf.columns or 'Probability' not in subdf.columns:
+            invalid_reasons.append("Must have columns 'Isolate', 'Predicted_Categorical_Clearance', and 'Probability'")
         else:
             golddf = pd.read_csv(args.goldstandard)
             isolates = golddf['Isolate_Number']
             if not isolates.isin(subdf['Isolate']).all() or not subdf['Isolate'].isin(isolates).all() or subdf['Isolate'].duplicated().any():
                 invalid_reasons.append("Must have all the 'Isolate' and no duplicates allowed")
-            if not subdf['Predicted_Categorical_Clearance'].isin(["Fast", "Slow"]).all():
-                invalid_reasons.append("'Predicted_Categorical_Clearance' must be 'Fast' or 'Slow' and no NAs are allowed")
+            if not subdf['Predicted_Categorical_Clearance'].isin(["FAST", "SLOW"]).all():
+                invalid_reasons.append("'Predicted_Categorical_Clearance' must be 'FAST' or 'SLOW' and no NAs are allowed")
+            if not is_numeric_dtype(subdf['Probability']) or subdf['Probability'].isnull().any():
+                invalid_reasons.append("'Probability' must be a numerical column and no NAs are allowed")
 
 if not invalid_reasons:
     prediction_file_status = "VALIDATED"
