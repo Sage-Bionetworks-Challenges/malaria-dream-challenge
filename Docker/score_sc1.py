@@ -13,6 +13,7 @@ parser.add_argument("-g", "--goldstandard", required=True,
                     help="Goldstandard for scoring")
 
 args = parser.parse_args()
+result = {}
 if args.status == "VALIDATED":
     prediction_file_status = "SCORED"
     subdf = pd.read_csv(args.submissionfile, sep="\t")
@@ -22,10 +23,10 @@ if args.status == "VALIDATED":
                            right_on="Isolate_Number")
     score = mergeddf['Predicted_IC50'].corr(mergeddf['DHA_IC50'],
                                             method="spearman")
+    result['score'] = score
+    result['score_rounded'] = round(score, 4)
 else:
     prediction_file_status = args.status
-    score = None
-result = {'score': score, 'score_rounded': round(score, 4),
-          'prediction_file_status': prediction_file_status}
+result['prediction_file_status'] = prediction_file_status
 with open(args.results, 'w') as o:
     o.write(json.dumps(result))

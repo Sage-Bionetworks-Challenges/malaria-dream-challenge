@@ -16,21 +16,22 @@ parser.add_argument("-g", "--goldstandard", required=True,
                     help="Goldstandard for scoring")
 
 args = parser.parse_args()
+result = {}
 if args.status == "VALIDATED":
     prediction_file_status = "SCORED"
     subdf = pd.read_csv(args.submissionfile, sep="\t")
     golddf = pd.read_csv(args.goldstandard)
-
     mergeddf = subdf.merge(golddf, left_on="Isolate",
                            right_on="Isolate_Number")
     y = np.array(mergeddf.Clearance)
-    pred = np.array(mergeddf.Predicted_Categorical_Clearance)
-    fpr, tpr, thresholds = metrics.precision_recall_curve(y, pred)
-    score = metrics.auc(fpr, tpr)
+    y = y < 5
+    pred = np.array(mergeddf.Probability)
+    precision, recall, _ = metrics.precision_recall_curve(y, pred)
+    score = metrics.auc(recall, precision)
+    result['score'] = score
+    result['score_rounded'] = round(score, 4)
 else:
     prediction_file_status = args.status
-    score = None
-result = {'score': score, 'score_rounded': round(score, 4),
-          'prediction_file_status': prediction_file_status}
+result['prediction_file_status'] = prediction_file_status
 with open(args.results, 'w') as o:
     o.write(json.dumps(result))
