@@ -18,7 +18,6 @@ inputs:
     type: string
 
 arguments:
-  - valueFrom: score.py
   - valueFrom: $(inputs.inputfile.path)
     prefix: -f
   - valueFrom: $(inputs.status)
