@@ -41,7 +41,17 @@ steps:
       - id: filepath
       - id: entity
       - id: entity_type 
-      
+
+  download_goldstandard:
+    run: https://raw.githubusercontent.com/Sage-Bionetworks/ChallengeWorkflowTemplates/v1.5/download_from_synapse.cwl
+    in:
+      - id: synapseid
+        valueFrom: "syn20186307"
+      - id: synapse_config
+        source: "#synapseConfig"
+    out:
+      - id: filepath
+
   validation:
     run: validate_sc2.cwl
     in:
@@ -49,6 +59,8 @@ steps:
         source: "#download_submission/filepath"
       - id: entity_type
         source: "#download_submission/entity_type"
+      - id: goldstandard
+        source: "#download_goldstandard/filepath"
     out:
       - id: results
       - id: status
@@ -65,7 +77,6 @@ steps:
         source: "#validation/status"
       - id: invalid_reasons
         source: "#validation/invalid_reasons"
-
     out: []
 
   annotate_validation_with_output:
@@ -82,16 +93,6 @@ steps:
       - id: synapse_config
         source: "#synapseConfig"
     out: [finished]
-
-  download_goldstandard:
-    run: https://raw.githubusercontent.com/Sage-Bionetworks/ChallengeWorkflowTemplates/v1.5/download_from_synapse.cwl
-    in:
-      - id: synapseid
-        valueFrom: "syn20186307"
-      - id: synapse_config
-        source: "#synapseConfig"
-    out:
-      - id: filepath
 
   scoring:
     run: score_sc2.cwl
