@@ -32,9 +32,11 @@ else:
 if not invalid_reasons:
     prediction_file_status = "VALIDATED"
 else:
-    prediction_file_status = "INVALID"       
+    prediction_file_status = "INVALID"    
 
 result = {'prediction_file_errors': "\n".join(invalid_reasons),
-          'prediction_file_status': prediction_file_status}
+          'prediction_file_status': prediction_file_status,
+          'round': 1}
+
 with open(args.results, 'w') as o:
     o.write(json.dumps(result))
