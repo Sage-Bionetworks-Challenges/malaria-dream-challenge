@@ -26,6 +26,7 @@ if args.status == "VALIDATED":
     result['score'] = score
     result['score_rounded'] = round(score, 4)
 else:
+    raise ValueError("INVALID PREDICITON FILE")
     prediction_file_status = args.status
 result['prediction_file_status'] = prediction_file_status
 with open(args.results, 'w') as o:
