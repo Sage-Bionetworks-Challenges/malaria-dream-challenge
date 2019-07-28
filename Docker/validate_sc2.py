@@ -22,7 +22,7 @@ else:
 
     if not invalid_reasons:
         if 'Isolate' not in subdf.columns or 'Predicted_Categorical_Clearance' not in subdf.columns or 'Probability' not in subdf.columns:
-            invalid_reasons.append("Must have columns 'Isolate', 'Predicted_Categorical_Clearance', and 'Probability'")
+            invalid_reasons.append("Must have columns 'Isolate', 'Predicted_Categorical_Clearance', and 'Probability' in your TSV submission")
         else:
             golddf = pd.read_csv(args.goldstandard)
             isolates = golddf['Isolate_Number']

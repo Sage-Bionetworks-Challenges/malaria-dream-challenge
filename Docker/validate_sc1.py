@@ -21,7 +21,7 @@ else:
 
     if not invalid_reasons:
         if 'Isolate' not in subdf.columns or 'Predicted_IC50' not in subdf.columns:
-            invalid_reasons.append("Must have columns 'Isolate' and 'Predicted_IC50'")
+            invalid_reasons.append("Must have columns 'Isolate' and 'Predicted_IC50' in your TSV submission")
         else:
             isolates = pd.Series(['isolate_' + str(i) for i in range(31,56)])
             if not isolates.isin(subdf['Isolate']).all() or not subdf['Isolate'].isin(isolates).all() or subdf['Isolate'].duplicated().any():
