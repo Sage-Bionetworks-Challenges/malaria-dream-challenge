@@ -31,14 +31,18 @@ if args.status == "VALIDATED":
     result['score'] = score
     result['score_rounded'] = round(score, 4)
 
-    categorical = np.array(mergeddf.Predicted_Categorical_Clearance)
-    # SLOW is turned into True
-    bool_cat = categorical == 'SLOW' 
-    # True == 1
-    int_cat = bool_cat.astype(int)
-    bac = metrics.balanced_accuracy_score(y, int_cat)
-    result['bac'] = bac
-    result['bac_rounded'] = round(bac, 4)
+    # categorical = np.array(mergeddf.Predicted_Categorical_Clearance)
+    # # SLOW is turned into True
+    # bool_cat = categorical == 'SLOW' 
+    # # True == 1
+    # int_cat = bool_cat.astype(int)
+    # bac = metrics.balanced_accuracy_score(y, int_cat)
+    # result['bac'] = bac
+    # result['bac_rounded'] = round(bac, 4)
+
+    auc = metrics.roc_auc_score(y, pred)
+    spearman = mergeddf['Probability'].corr(mergeddf['Clearance'],
+                                            method="spearman")
 
 else:
     raise ValueError("INVALID PREDICITON FILE")
