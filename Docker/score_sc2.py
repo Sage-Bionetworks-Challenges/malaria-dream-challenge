@@ -41,7 +41,8 @@ if args.status == "VALIDATED":
     # result['bac_rounded'] = round(bac, 4)
 
     auc = metrics.roc_auc_score(y, pred)
-    spearman = mergeddf['Probability'].corr(mergeddf['Clearance'],
+    mergeddf['Newprobability'] = 1 - mergeddf['Probability']
+    spearman = mergeddf['Newprobability'].corr(mergeddf['Clearance'],
                                             method="spearman")
 
 else:
