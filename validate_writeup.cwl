@@ -32,7 +32,7 @@ outputs:
   - id: results
     type: File
     outputBinding:
-      glob: results.json   
+      glob: results.json
 
   - id: status
     type: string
